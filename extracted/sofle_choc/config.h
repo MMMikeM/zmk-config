@@ -1,0 +1,7 @@
+#pragma once
+
+#define DEBOUNCE 8
+#define TAPPING_TERM 300
+#define FLOW_TAP_TERM 150
+
+#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD

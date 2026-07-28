@@ -1,0 +1,10 @@
+build/
+.west/
+zmk/
+zephyr/
+modules/
+tools/
+bootloader/
+*.uf2
+
+sofle_choc*.zip

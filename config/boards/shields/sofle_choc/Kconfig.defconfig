@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: MIT
+
+if SHIELD_SOFLE_CHOC_LEFT || SHIELD_SOFLE_CHOC_RIGHT || SHIELD_SOFLE_CHOC_DONGLE
+
+config ZMK_KEYBOARD_NAME
+    default "Sofle Choc"
+
+config ZMK_SPLIT
+    default y
+
+endif
+
+if SHIELD_SOFLE_CHOC_LEFT || SHIELD_SOFLE_CHOC_RIGHT
+
+# Both halves are peripherals; the dongle is the central. ZMK_SPLIT_ROLE_CENTRAL
+# already defaults to n, so nothing to set here beyond the encoder driver.
+
+config EC11
+    default y
+
+config EC11_TRIGGER_GLOBAL_THREAD
+    default y
+
+endif
+
+if SHIELD_SOFLE_CHOC_DONGLE
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
+    default 2
+
+config BT_MAX_CONN
+    default 6
+
+config BT_MAX_PAIRED
+    default 6
+
+endif

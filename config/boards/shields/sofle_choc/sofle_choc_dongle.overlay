@@ -1,0 +1,22 @@
+/*
+ * Dongle: no physical keys, so a mock kscan driver stands in. It still needs
+ * the same matrix transform and sensor list as the halves, since the keymap is
+ * evaluated here.
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "sofle_choc-common.dtsi"
+
+/ {
+    chosen {
+        zmk,kscan = &mock_kscan;
+    };
+
+    mock_kscan: kscan_mock {
+        compatible = "zmk,kscan-mock";
+        columns = <0>;
+        rows = <0>;
+        events = <0>;
+    };
+};
