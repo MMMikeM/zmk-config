@@ -10,18 +10,9 @@ config ZMK_SPLIT
 
 endif
 
-if SHIELD_SOFLE_CHOC_LEFT || SHIELD_SOFLE_CHOC_RIGHT
-
-# Both halves are peripherals; the dongle is the central. ZMK_SPLIT_ROLE_CENTRAL
-# already defaults to n, so nothing to set here beyond the encoder driver.
-
-config EC11
-    default y
-
-config EC11_TRIGGER_GLOBAL_THREAD
-    default y
-
-endif
+# Both halves are peripherals and the dongle is the central, so nothing to set
+# for the halves: ZMK_SPLIT_ROLE_CENTRAL already defaults to n, and EC11 enables
+# itself via `depends on DT_HAS_ALPS_EC11_ENABLED` when an encoder node is okay.
 
 if SHIELD_SOFLE_CHOC_DONGLE
 
