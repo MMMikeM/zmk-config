@@ -1,13 +1,14 @@
 include:
   # SuperMini nRF52840 is pin-compatible with the nice!nano v2, which is the
-  # board target used for it in ZMK.
-  - board: nice_nano_v2
+  # board target used for it in ZMK. Since the Zephyr 4.1 migration the target
+  # is a revision + variant: `nice_nano//zmk` (v2 is the default revision).
+  - board: nice_nano//zmk
     shield: sofle_choc_dongle
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: sofle_choc_left
-  - board: nice_nano_v2
+  - board: nice_nano//zmk
     shield: sofle_choc_right
 
-  # Flash these first, once, to clear old bond/pairing data.
-  - board: nice_nano_v2
+  # Flash this first, once, to clear old bond/pairing data.
+  - board: nice_nano//zmk
     shield: settings_reset

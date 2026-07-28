@@ -8,12 +8,14 @@ dongle / split central.
 
 | Piece  | Board target    | Notes |
 |--------|-----------------|-------|
-| Left   | `nice_nano_v2`  | SuperMini nRF52840, encoder on F5/F4 |
-| Right  | `nice_nano_v2`  | SuperMini nRF52840, encoder on F5/F4 |
-| Dongle | `nice_nano_v2`  | SuperMini nRF52840, no matrix, USB powered |
+| Left   | `nice_nano//zmk` | SuperMini nRF52840, encoder on F5/F4 |
+| Right  | `nice_nano//zmk` | SuperMini nRF52840, encoder on F5/F4 |
+| Dongle | `nice_nano//zmk` | SuperMini nRF52840, no matrix, USB powered |
 
-The SuperMini nRF52840 is pin-compatible with the nice!nano v2, so `nice_nano_v2`
-is the correct board target. Two differences to be aware of:
+The SuperMini nRF52840 is pin-compatible with the nice!nano v2, so the nice!nano
+board target is the right one. Since ZMK moved to Zephyr 4.1 that target is
+spelled `nice_nano//zmk` (revision + ZMK variant); the old `nice_nano_v2` name
+no longer resolves. Two differences to be aware of:
 
 * No external QSPI flash chip — harmless, ZMK stores settings in internal flash.
 * Battery divider/LED wiring is not identical, so battery percentage may read
@@ -27,7 +29,7 @@ Bootloader: double-tap RST (short RST to GND twice within ~0.5s), then drop the
 Push to GitHub and the Actions workflow builds all four firmwares, or locally:
 
 ```
-west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=sofle_choc_left -DZMK_CONFIG=$PWD/config
+west build -s zmk/app -b nice_nano//zmk -- -DSHIELD=sofle_choc_left -DZMK_CONFIG=$PWD/config
 ```
 
 ## Flashing order
