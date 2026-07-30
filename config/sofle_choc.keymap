@@ -1,13 +1,24 @@
 /*
  * Sofle Choc keymap - ported from the QMK sofle_choc:default keymap.
  *
+ * Convention on the non-base layers: unmapped positions are &none, not &trans,
+ * so a mispress while holding a layer produces nothing instead of injecting a
+ * stray letter. The exceptions, which stay &trans deliberately:
+ *
+ *   - the whole thumb row (50-57), so Bspc/Enter/Space stay live while a layer
+ *     is held, and so layer keys can still be chorded
+ *   - Mute/Play (42, 43), wanted regardless of layer state
+ *   - the modifiers: GUI (24) and both shifts (36, 49)
+ *   - Tab (12)
+ *
+ * Position 11 is pointedly NOT transparent: it is &to QWE on the base layer,
+ * and a stray press while holding a layer would silently swap the layout.
+ *
  * SPDX-License-Identifier: MIT
  */
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
-#include <dt-bindings/zmk/bt.h>
-#include <dt-bindings/zmk/outputs.h>
 #include <dt-bindings/zmk/pointing.h>
 
 #define CMK 0
@@ -18,16 +29,37 @@
 
 / {
     behaviors {
-        // QMK equivalent: TAPPING_TERM 300, FLOW_TAP_TERM 150.
-        // require-prior-idle-ms is ZMK's flow-tap: a tap-hold pressed within
-        // 150ms of another keypress resolves as a tap.
-        lt: layer_tap {
+        // Arrow layer is always a long deliberate hold (~1s), never a fast roll,
+        // so the term only needs to clear a normal keytap. Shorter term = less
+        // lag before the first arrow registers, since tap-preferred queues it
+        // until the term expires. quick-tap-ms lets a doubled letter still type
+        // through. Bound to both pinky bottom-row keys (Z and /) so either hand
+        // can reach the layer while the thumbs stay free for Bspc/Enter.
+        lt_arw: layer_tap_arrow {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <300>;
+            tapping-term-ms = <150>;
             require-prior-idle-ms = <150>;
+            quick-tap-ms = <200>;
             bindings = <&mo>, <&kp>;
+        };
+
+        // QMK BOTH_SHIFTS_TURNS_ON_CAPS_WORD: each shift morphs into caps word
+        // when the other shift is already held. Unlike a combo there is no
+        // timing window, and holding both shifts normally still works.
+        caps_lsft: caps_lsft {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp LSHFT>, <&caps_word>;
+            mods = <(MOD_RSFT)>;
+        };
+
+        caps_rsft: caps_rsft {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp RSHFT>, <&caps_word>;
+            mods = <(MOD_LSFT)>;
         };
 
         // Encoder rotation -> mouse scroll (QMK KC_MS_WH_UP/DOWN).
@@ -41,12 +73,19 @@
     combos {
         compatible = "zmk,combos";
 
-        // QMK BOTH_SHIFTS_TURNS_ON_CAPS_WORD
-        combo_caps_word {
-            timeout-ms = <50>;
-            key-positions = <36 49>;
-            bindings = <&caps_word>;
-            layers = <CMK QWE>;
+        // Esc used to sit in the top-left corner, which is a long reach for a
+        // key pressed constantly. "fp" is not an English bigram, so this pair
+        // cannot fire during normal typing; the short timeout covers fast
+        // rolls anyway. Deliberately no require-prior-idle-ms: Esc
+        // is usually pressed the instant typing stops, which is exactly what
+        // that guard would block. Colemak only - the same positions are R and T
+        // on qwerty, and that layer is for games, which keep Esc on its own key
+        // and would misfire this constantly.
+        combo_esc {
+            timeout-ms = <40>;
+            key-positions = <15 16>;
+            bindings = <&kp ESC>;
+            layers = <CMK>;
         };
     };
 
@@ -55,18 +94,20 @@
 
         colemak_dh {
             display-name = "colemak";
+// Top row is unbound: the number row lives on SYM and Esc is the F+P combo.
+// Only the layout switch is kept.
 // .------------------------------------------.                    .------------------------------------------.
-// | ESC   |   1  |   2  |   3  |   4  |   5  |                    |   6  |   7  |   8  |   9  |   0  |TO(QRT)|
+// |       |      |      |      |      |      |                    |      |      |      |      |      |TO(QRT)|
 // | Tab   |   Q  |   W  |   F  |   P  |   B  |                    |   J  |   L  |   U  |   Y  |   ;  |   \   |
-// | GUI   |   A  |   R  |   S  |   T  |   G  |                    |   M  |   N  |   E  |   I  | O/ARW|   '   |
-// | Shift | Z/ARW|   X  |   C  |   D  |   V  |  Mute |    | Play  |   K  |   H  |   ,  |   .  |   /  | Shift |
-//                       | LCTL | LALT |  SPC | SYM/ESC|   |ENT    | Bspc |BKT/TAB| Del |
+// | GUI   |   A  |   R  |   S  |   T  |   G  |                    |   M  |   N  |   E  |   I  |   O  |   '   |
+// | Shift | Z/ARW|   X  |   C  |   D  |   V  |  Mute |    | Play  |   K  |   H  |   ,  |   .  | //ARW| Shift |
+//                       | LCTL | LALT |  SPC |  SYM   |   |ENT    | Bspc |  BKT  | Del |
             bindings = <
-&kp ESC   &kp N1     &kp N2   &kp N3   &kp N4   &kp N5                            &kp N6    &kp N7   &kp N8    &kp N9  &kp N0        &to QWE
+&none     &none      &none    &none    &none    &none                             &none     &none    &none     &none   &none         &to QWE
 &kp TAB   &kp Q      &kp W    &kp F    &kp P    &kp B                             &kp J     &kp L    &kp U     &kp Y   &kp SEMI      &kp BSLH
-&kp LGUI  &kp A      &kp R    &kp S    &kp T    &kp G                             &kp M     &kp N    &kp E     &kp I   &lt ARW O     &kp SQT
-&kp LSHFT &lt ARW Z  &kp X    &kp C    &kp D    &kp V     &kp C_MUTE   &kp C_PP   &kp K     &kp H    &kp COMMA &kp DOT &kp FSLH      &kp RSHFT
-                              &kp LCTRL &kp LALT &kp SPACE &lt SYM ESC  &kp RET   &kp BSPC  &lt BKT TAB &kp DEL
+&kp LGUI  &kp A      &kp R    &kp S    &kp T    &kp G                             &kp M     &kp N    &kp E     &kp I   &kp O         &kp SQT
+&caps_lsft &lt_arw ARW Z &kp X &kp C   &kp D    &kp V     &kp C_MUTE   &kp C_PP   &kp K     &kp H    &kp COMMA &kp DOT &lt_arw ARW FSLH &caps_rsft
+                              &kp LCTRL &kp LALT &kp SPACE &mo SYM     &kp RET    &kp BSPC  &mo BKT  &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &enc_scroll SCRL_DOWN SCRL_UP>;
@@ -74,12 +115,15 @@
 
         qwerty {
             display-name = "qwerty";
+// Gaming layer: plain keycodes only. No hold-taps, mod-morphs or combos, since
+// games hold and mash keys in ways that trip every timing-based behavior. The
+// number row and Esc stay put. Layer holds are kept because &mo has no timing.
             bindings = <
 &kp ESC   &kp N1     &kp N2   &kp N3   &kp N4   &kp N5                            &kp N6    &kp N7   &kp N8    &kp N9  &kp N0        &to CMK
 &kp TAB   &kp Q      &kp W    &kp E    &kp R    &kp T                             &kp Y     &kp U    &kp I     &kp O   &kp P         &kp BSLH
-&kp LGUI  &kp A      &kp S    &kp D    &kp F    &kp G                             &kp H     &kp J    &kp K     &kp L   &lt ARW SEMI  &kp SQT
+&kp LGUI  &kp A      &kp S    &kp D    &kp F    &kp G                             &kp H     &kp J    &kp K     &kp L   &kp SEMI      &kp SQT
 &kp LSHFT &kp Z      &kp X    &kp C    &kp V    &kp B     &kp C_MUTE   &kp C_PP   &kp N     &kp M    &kp COMMA &kp DOT &kp FSLH      &kp RSHFT
-                              &kp LCTRL &kp LALT &kp SPACE &lt SYM ESC  &kp RET   &kp BSPC  &lt BKT TAB &kp DEL
+                              &kp LCTRL &kp LALT &kp SPACE &mo SYM     &kp RET    &kp BSPC  &mo BKT  &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &enc_scroll SCRL_DOWN SCRL_UP>;
@@ -87,13 +131,12 @@
 
         symbols {
             display-name = "symbols";
-// Top row carries the wireless controls (no QMK equivalent).
-// |BTCLR  | BT0  | BT1  | BT2  | BT3  |OUT_TG|                    |      |      |      |      |      |       |
+// |       |      |      |      |      |      |                    |      |      |      |      |      |       |
 // |       |  F1  |  F2  |  F3  |  F4  |  F5  |                    |  F6  |  F7  |  F8  |  F9  |  F10 |  F11  |
 // |       |   1  |   2  |   3  |   4  |   5  |                    |   6  |   7  |   8  |   9  |   0  |  F12  |
 // |       |   !  |   @  |   #  |   $  |   %  |       |    |       |   ^  |   &  |   *  |   (  |   )  |       |
             bindings = <
-&bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &out OUT_TOG                &trans    &trans   &trans    &trans   &trans   &trans
+&none      &none        &none        &none        &none        &none                       &none     &none    &none     &none    &none    &none
 &trans     &kp F1       &kp F2       &kp F3       &kp F4       &kp F5                      &kp F6    &kp F7   &kp F8    &kp F9   &kp F10  &kp F11
 &trans     &kp N1       &kp N2       &kp N3       &kp N4       &kp N5                      &kp N6    &kp N7   &kp N8    &kp N9   &kp N0   &kp F12
 &trans     &kp EXCL     &kp AT       &kp HASH     &kp DLLR     &kp PRCNT   &trans  &trans  &kp CARET &kp AMPS &kp ASTRK &kp LPAR &kp RPAR &trans
@@ -105,12 +148,12 @@
 
         brackets {
             display-name = "brackets";
-// home row: [{(-_+=)}]`  top-right: ~
+// home row: [{(-_+=)}]`  (tilde omitted - shift+grave is easier than a detour)
             bindings = <
-&trans &trans   &trans   &trans   &trans    &trans                       &trans   &trans    &trans   &trans   &trans   &kp TILDE
-&trans &trans   &trans   &trans   &trans    &trans                       &trans   &trans    &trans   &trans   &trans   &trans
+&none  &none    &none    &none    &none     &none                        &none    &none     &none    &none    &none    &none
+&trans &none    &none    &none    &none     &none                        &none    &none     &none    &none    &none    &none
 &trans &kp LBKT &kp LBRC &kp LPAR &kp MINUS &kp UNDER                    &kp PLUS &kp EQUAL &kp RPAR &kp RBRC &kp RBKT &kp GRAVE
-&trans &trans   &trans   &trans   &trans    &trans     &trans   &trans   &trans   &trans    &trans   &trans   &trans   &trans
+&trans &none    &none    &none    &none     &none      &trans   &trans   &none    &none     &none    &none    &none    &trans
                          &trans   &trans    &trans     &trans   &trans   &trans   &trans    &trans
             >;
 
@@ -119,13 +162,20 @@
 
         arrows {
             display-name = "arrows";
-// inverted-T on right hand, page/home/end on left. Bootloader/reset on the
-// two leftmost keys of the top row (no QMK equivalent, needed for wireless).
+// inverted-T on right hand, page/home/end on left. No &bootloader/&sys_reset
+// keys: both halves have physical reset buttons, and reset behaviors run on
+// the half where the key is pressed anyway, so soft keys add nothing.
+//
+// No &bt or &out keys: the dongle is permanently on USB, so it holds no host
+// BLE bond for BT_CLR to clear and no second output for OUT_TOG to select -
+// both would only ever fire by accident. Split pairing between the dongle and
+// the halves is separate state, and the way to reset that is flashing the
+// settings_reset firmware from build.yaml.
             bindings = <
-&bootloader &sys_reset &trans &trans     &trans    &trans                    &trans &trans   &trans   &trans    &trans &trans
-&trans      &trans     &trans &kp PG_UP  &kp HOME  &trans                    &trans &trans   &kp UP   &trans    &trans &trans
-&trans      &trans     &trans &kp PG_DN  &kp END   &trans                    &trans &kp LEFT &kp DOWN &kp RIGHT &trans &trans
-&trans      &trans     &trans &trans     &trans    &trans   &trans   &trans  &trans &trans   &trans   &trans    &trans &trans
+&none       &none      &none  &none      &none     &none                     &none  &none    &none    &none     &none  &none
+&trans      &none      &none  &kp PG_UP  &kp HOME  &none                     &none  &none    &kp UP   &none     &none  &none
+&trans      &none      &none  &kp PG_DN  &kp END   &none                     &none  &kp LEFT &kp DOWN &kp RIGHT &none  &none
+&trans      &none      &none  &none      &none     &none    &trans   &trans  &none  &none    &none    &none     &none  &trans
                               &trans     &trans    &trans   &trans   &trans  &trans &trans   &trans
             >;
 
