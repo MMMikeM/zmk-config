@@ -196,17 +196,17 @@
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
 // |  ~  |     |     | PgUp| Home|     |               |     |     |  Up |     |     |     |
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
-// |  ~  |     |     | PgDn| End |     |               |     | Left| Down| Rght|     |     |
+// |  ~  |     |     | PgDn| End | PrSc|               |     | Left| Down| Rght|     |     |
 // :-----+-----+-----+-----+-----+-----:-----.   .-----:-----+-----+-----+-----+-----+-----:
-// |  ~  |     |     |     |     | PrSc|  ~  |   |  ~  |     |     |     |     |     |  ~  |
+// |  ~  |     |     |     |     |     |  ~  |   |  ~  |     |     |     |     |     |  ~  |
 // '-----+-----+-----+-----+-----+-----+-----'   '-----+-----+-----+-----+-----+-----+-----'
 //                   |  ~  |  ~  |  ~  |  ~  |   |  ~  |  ~  |  ~  |  ~  |
 //                   '-----'-----'-----'-----'   '-----'-----'-----'-----'
             bindings = <
 &none       &none      &none  &none      &none     &none                     &none  &none    &none    &none     &none  &none
 &trans      &none      &none  &kp PG_UP  &kp HOME  &none                     &none  &none    &kp UP   &none     &none  &trans
-&trans      &none      &none  &kp PG_DN  &kp END   &none                     &none  &kp LEFT &kp DOWN &kp RIGHT &none  &trans
-&trans      &none      &none  &none      &none     &kp PSCRN &trans  &trans  &none  &none    &none    &none     &none  &trans
+&trans      &none      &none  &kp PG_DN  &kp END   &kp PSCRN                     &none  &kp LEFT &kp DOWN &kp RIGHT &none  &trans
+&trans      &none      &none  &none      &none     &none &trans  &trans  &none  &none    &none    &none     &none  &trans
                               &trans     &trans    &trans   &trans   &trans  &trans &trans   &trans
             >;
 
