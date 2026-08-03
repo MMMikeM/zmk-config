@@ -23,20 +23,52 @@
 
 / {
     behaviors {
-        // Arrow-layer hold is always deliberate, never a fast roll, so a short
-        // term is safe and cuts the lag before the first arrow. Bound to both
-        // pinky home-row keys (A and O) - high-frequency letters, so
-        // require-prior-idle-ms forces an immediate tap mid-word and only a
-        // press after a pause can resolve as a hold; quick-tap-ms lets a
-        // doubled letter type through.
-        lt_arw: layer_tap_arrow {
+        // Arrow-layer hold, bound to both pinky home-row keys (A and O). Both
+        // are high-frequency letters, so three separate guards keep a typed
+        // letter from resolving as a layer hold:
+        //
+        // - require-prior-idle-ms kills the hold mid-word: any press that
+        //   lands within the window of the previous one is an immediate tap.
+        //   Set above a typical inter-keystroke interval (~200ms at 60wpm) -
+        //   at 150 it only covered typing faster than ~80wpm, which let the O
+        //   in "around" resolve as a hold.
+        // - hold-trigger-key-positions gates the hold to the opposite hand:
+        //   pressing anything else first is an immediate tap. This is what
+        //   covers the word-initial case, where there is no prior key and so
+        //   require-prior-idle-ms cannot apply - the A in "around" taps
+        //   because R is not a nav position. Cost: reaching a nav key on the
+        //   same hand as the trigger (A -> Home/End/PgUp/PgDn, O -> arrows)
+        //   means holding past the tapping term first instead of chording.
+        // - tapping-term-ms is the backstop for the residual bigrams the
+        //   positional gate cannot catch, where the next letter *is* a nav
+        //   position: a+{U,N,E,I} ("and", "any") and o+{F,P,S,T,G} ("of").
+        //   Raise it if those still misfire; lower it if the layer feels slow
+        //   to engage, since tap-preferred means it is also the latency
+        //   before the first arrow.
+        //
+        // quick-tap-ms lets a doubled letter type through. tap-preferred (not
+        // balanced) because a roll - press A, press N, release N, release A -
+        // must never be a hold.
+        lt_arw_l: layer_tap_arrow_left {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <150>;
-            require-prior-idle-ms = <150>;
+            tapping-term-ms = <220>;
+            require-prior-idle-ms = <200>;
             quick-tap-ms = <200>;
             bindings = <&mo>, <&kp>;
+            hold-trigger-key-positions = <20 31 32 33>;  // Up, Left, Down, Right
+        };
+
+        lt_arw_r: layer_tap_arrow_right {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <220>;
+            require-prior-idle-ms = <200>;
+            quick-tap-ms = <200>;
+            bindings = <&mo>, <&kp>;
+            hold-trigger-key-positions = <15 16 27 28 29>;  // PgUp, Home, PgDn, End, PrtScn
         };
 
         // QMK BOTH_SHIFTS_TURNS_ON_CAPS_WORD: each shift morphs into caps word
@@ -102,7 +134,7 @@
             bindings = <
 &none     &none      &none    &none    &none    &none                             &none     &none    &none     &none   &none         &to QWE
 &kp TAB   &kp Q      &kp W    &kp F    &kp P    &kp B                             &kp J     &kp L    &kp U     &kp Y   &kp SEMI      &kp BSLH
-&kp LGUI  &lt_arw ARW A &kp R &kp S    &kp T    &kp G                             &kp M     &kp N    &kp E     &kp I   &lt_arw ARW O &kp SQT
+&kp LGUI  &lt_arw_l ARW A &kp R &kp S  &kp T    &kp G                             &kp M     &kp N    &kp E     &kp I   &lt_arw_r ARW O &kp SQT
 &caps_lsft &kp Z     &kp X    &kp C    &kp D    &kp V     &kp C_MUTE   &kp C_PP   &kp K     &kp H    &kp COMMA &kp DOT &kp FSLH      &caps_rsft
                               &kp LCTRL &kp LALT &kp SPACE &mo SYM     &kp RET    &kp BSPC  &mo BKT  &kp DEL
             >;
