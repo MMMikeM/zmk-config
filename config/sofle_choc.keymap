@@ -52,23 +52,25 @@
         lt_arw_l: layer_tap_arrow_left {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
-            flavor = "tap-preferred";
-            tapping-term-ms = <220>;
-            require-prior-idle-ms = <200>;
-            quick-tap-ms = <200>;
+            flavor = "balanced";
+            tapping-term-ms = <300>;
+            require-prior-idle-ms = <150>;
+            quick-tap-ms = <150>;
             bindings = <&mo>, <&kp>;
             hold-trigger-key-positions = <20 31 32 33>;  // Up, Left, Down, Right
+            hold-trigger-on-release;
         };
 
         lt_arw_r: layer_tap_arrow_right {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
-            flavor = "tap-preferred";
-            tapping-term-ms = <220>;
-            require-prior-idle-ms = <200>;
-            quick-tap-ms = <200>;
+            flavor = "balanced";
+            tapping-term-ms = <300>;
+            require-prior-idle-ms = <150>;
+            quick-tap-ms = <150>;
             bindings = <&mo>, <&kp>;
             hold-trigger-key-positions = <15 16 27 28 29>;  // PgUp, Home, PgDn, End, PrtScn
+            hold-trigger-on-release;
         };
 
         // QMK BOTH_SHIFTS_TURNS_ON_CAPS_WORD: each shift morphs into caps word
