@@ -5,7 +5,7 @@
  * holding a layer sends nothing. Deliberate &trans exceptions: 
  * - Thumb cluster (50-57)
  * - Encoders: Mute/Play (42, 43)
- * - Outer columns: GUI (24), shifts (36, 49), Tab (12).
+ * - Outer columns: Ctrl (24), shifts (36, 49), Tab (12).
  * - Position 11 (Layout switch) is NOT &trans - a stray press while holding a layer would silently swap the layout.
  *
  * SPDX-License-Identifier: MIT
@@ -127,18 +127,18 @@
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
 // | Tab |  Q  |  W  |  F  |  P  |  B  |               |  J  |  L  |  U  |  Y  |  ;  |  \  |
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
-// | GUI |A/ARW|  R  |  S  |  T  |  G  |               |  M  |  N  |  E  |  I  |O/ARW|  '  |
+// | Ctrl|A/ARW|  R  |  S  |  T  |  G  |               |  M  |  N  |  E  |  I  |O/ARW|  '  |
 // :-----+-----+-----+-----+-----+-----:-----.   .-----:-----+-----+-----+-----+-----+-----:
 // |Shift|  Z  |  X  |  C  |  D  |  V  | Mute|   | Play|  K  |  H  |  ,  |  .  |  /  |Shift|
 // '-----+-----+-----+-----+-----+-----+-----'   '-----+-----+-----+-----+-----+-----+-----'
-//                   | Ctrl| Alt |Space| SYM |   | Ent | Bspc| BKT | Del |
+//                   | GUI | Alt |Space| SYM |   | Ent | Bspc| BKT | Del |
 //                   '-----'-----'-----'-----'   '-----'-----'-----'-----'
             bindings = <
 &none     &none      &none    &none    &none    &none                             &none     &none    &none     &none   &none         &to QWE
 &kp TAB   &kp Q      &kp W    &kp F    &kp P    &kp B                             &kp J     &kp L    &kp U     &kp Y   &kp SEMI      &kp BSLH
-&kp LGUI  &lt_arw_l ARW A &kp R &kp S  &kp T    &kp G                             &kp M     &kp N    &kp E     &kp I   &lt_arw_r ARW O &kp SQT
+&kp LCTRL &lt_arw_l ARW A &kp R &kp S  &kp T    &kp G                             &kp M     &kp N    &kp E     &kp I   &lt_arw_r ARW O &kp SQT
 &caps_lsft &kp Z     &kp X    &kp C    &kp D    &kp V     &kp C_MUTE   &kp C_PP   &kp K     &kp H    &kp COMMA &kp DOT &kp FSLH      &caps_rsft
-                              &kp LCTRL &kp LALT &kp SPACE &mo SYM     &kp RET    &kp BSPC  &mo BKT  &kp DEL
+                              &kp LGUI  &kp LALT &kp SPACE &mo SYM     &kp RET    &kp BSPC  &mo BKT  &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &enc_scroll SCRL_DOWN SCRL_UP>;
@@ -153,18 +153,18 @@
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
 // | Tab |  Q  |  W  |  E  |  R  |  T  |               |  Y  |  U  |  I  |  O  |  P  |  \  |
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
-// | GUI |  A  |  S  |  D  |  F  |  G  |               |  H  |  J  |  K  |  L  |  ;  |  '  |
+// | Ctrl|  A  |  S  |  D  |  F  |  G  |               |  H  |  J  |  K  |  L  |  ;  |  '  |
 // :-----+-----+-----+-----+-----+-----:-----.   .-----:-----+-----+-----+-----+-----+-----:
 // |Shift|  Z  |  X  |  C  |  V  |  B  | Mute|   | Play|  N  |  M  |  ,  |  .  |  /  |Shift|
 // '-----+-----+-----+-----+-----+-----+-----'   '-----+-----+-----+-----+-----+-----+-----'
-//                   | Ctrl| Alt |Space| SYM |   | Ent | Bspc| BKT | Del |
+//                   | GUI | Alt |Space| SYM |   | Ent | Bspc| BKT | Del |
 //                   '-----'-----'-----'-----'   '-----'-----'-----'-----'
             bindings = <
 &kp ESC   &kp N1     &kp N2   &kp N3   &kp N4   &kp N5                            &kp N6    &kp N7   &kp N8    &kp N9  &kp N0        &to CMK
 &kp TAB   &kp Q      &kp W    &kp E    &kp R    &kp T                             &kp Y     &kp U    &kp I     &kp O   &kp P         &kp BSLH
-&kp LGUI  &kp A      &kp S    &kp D    &kp F    &kp G                             &kp H     &kp J    &kp K     &kp L   &kp SEMI      &kp SQT
+&kp LCTRL &kp A      &kp S    &kp D    &kp F    &kp G                             &kp H     &kp J    &kp K     &kp L   &kp SEMI      &kp SQT
 &kp LSHFT &kp Z      &kp X    &kp C    &kp V    &kp B     &kp C_MUTE   &kp C_PP   &kp N     &kp M    &kp COMMA &kp DOT &kp FSLH      &kp RSHFT
-                              &kp LCTRL &kp LALT &kp SPACE &mo SYM     &kp RET    &kp BSPC  &mo BKT  &kp DEL
+                              &kp LGUI  &kp LALT &kp SPACE &mo SYM     &kp RET    &kp BSPC  &mo BKT  &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &enc_scroll SCRL_DOWN SCRL_UP>;
@@ -200,7 +200,7 @@
 // .-----.-----.-----.-----.-----.-----.               .-----.-----.-----.-----.-----.-----.
 // |     |     |     |     |     |     |               |     |     |     |     |     |     |
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
-// |  ~  |     |     |     |     |     |               |     |     |     |     |     |     |
+// |  ~  |     |     |     |     |     |               |     |     |     |     |     |  ~  |
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
 // |  ~  |  [  |  {  |  (  |  -  |  _  |               |  +  |  =  |  )  |  }  |  ]  |  `  |
 // :-----+-----+-----+-----+-----+-----:-----.   .-----:-----+-----+-----+-----+-----+-----:
@@ -228,9 +228,9 @@
 // .-----.-----.-----.-----.-----.-----.               .-----.-----.-----.-----.-----.-----.
 // |     |     |     |     |     |     |               |     |     |     |     |     |     |
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
-// |  ~  |     |     | PgUp| Home|     |               |     |     |  Up |     |     |     |
+// |  ~  |     |     | PgUp| Home|     |               |     |     |  Up |     |     |  ~  |
 // :-----+-----+-----+-----+-----+-----:               :-----+-----+-----+-----+-----+-----:
-// |  ~  |     |     | PgDn| End | PrSc|               |     | Left| Down| Rght|     |     |
+// |  ~  |     |     | PgDn| End | PrSc|               |     | Left| Down| Rght|     |  ~  |
 // :-----+-----+-----+-----+-----+-----:-----.   .-----:-----+-----+-----+-----+-----+-----:
 // |  ~  |     |     |     |     |     |  ~  |   |  ~  |     |     |     |     |     |  ~  |
 // '-----+-----+-----+-----+-----+-----+-----'   '-----+-----+-----+-----+-----+-----+-----'
