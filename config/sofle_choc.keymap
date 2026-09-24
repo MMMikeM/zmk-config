@@ -24,37 +24,39 @@
 / {
     behaviors {
         // Arrow-layer hold, bound to both pinky home-row keys (A and O). Both
-        // are high-frequency letters, so three separate guards keep a typed
-        // letter from resolving as a layer hold:
+        // are high-frequency letters, so several guards keep a typed letter
+        // from resolving as a layer hold:
         //
-        // - require-prior-idle-ms kills the hold mid-word: any press that
-        //   lands within the window of the previous one is an immediate tap.
-        //   Set above a typical inter-keystroke interval (~200ms at 60wpm) -
-        //   at 150 it only covered typing faster than ~80wpm, which let the O
-        //   in "around" resolve as a hold.
-        // - hold-trigger-key-positions gates the hold to the opposite hand:
-        //   pressing anything else first is an immediate tap. This is what
-        //   covers the word-initial case, where there is no prior key and so
-        //   require-prior-idle-ms cannot apply - the A in "around" taps
-        //   because R is not a nav position. Cost: reaching a nav key on the
-        //   same hand as the trigger (A -> Home/End/PgUp/PgDn, O -> arrows)
-        //   means holding past the tapping term first instead of chording.
-        // - tapping-term-ms is the backstop for the residual bigrams the
-        //   positional gate cannot catch, where the next letter *is* a nav
-        //   position: a+{U,N,E,I} ("and", "any") and o+{F,P,S,T,G} ("of").
-        //   Raise it if those still misfire; lower it if the layer feels slow
-        //   to engage, since tap-preferred means it is also the latency
-        //   before the first arrow.
+        // - balanced flavor: another key pressed *and released* while A/O is
+        //   held means hold, so a quick "hold A, tap Down" engages without
+        //   waiting for the tapping term. A roll (press A, press N, release
+        //   A, release N) stays a tap. hold-preferred would turn word-initial
+        //   "and"/"of" into arrows; tap-preferred always waits the full term.
+        // - hold-trigger-key-positions gates the hold to the opposite hand's
+        //   nav keys: releasing anything else first is a tap. This covers the
+        //   word-initial case - the A in "around" taps because R is not a nav
+        //   position. Cost: reaching a nav key on the same hand as the trigger
+        //   (A -> Home/End/PgUp/PgDn, O -> arrows) means holding past the
+        //   tapping term first instead of chording. hold-trigger-on-release
+        //   defers that check to the first key release.
+        // - require-prior-idle-ms forces an immediate tap when A/O is pressed
+        //   within the window of the previous key. At 50 it only catches very
+        //   fast rolls (~240wpm), trading mid-word protection for arrows being
+        //   reachable almost straight after typing. At 150 the O in "around"
+        //   was still resolving as a hold at slower speeds; raise it again if
+        //   mid-word misfires come back.
+        // - tapping-term-ms is the backstop: held past it with nothing else
+        //   pressed, it is a hold. It is also the lag before a held arrow
+        //   starts repeating and before same-hand nav works. Lower it if the
+        //   layer feels slow; raise it if slow typing of A/O misfires.
         //
-        // quick-tap-ms lets a doubled letter type through. tap-preferred (not
-        // balanced) because a roll - press A, press N, release N, release A -
-        // must never be a hold.
+        // quick-tap-ms lets a doubled letter type through.
         lt_arw_l: layer_tap_arrow_left {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "balanced";
-            tapping-term-ms = <300>;
-            require-prior-idle-ms = <150>;
+            tapping-term-ms = <250>;
+            require-prior-idle-ms = <50>;
             quick-tap-ms = <150>;
             bindings = <&mo>, <&kp>;
             hold-trigger-key-positions = <20 31 32 33>;  // Up, Left, Down, Right
@@ -65,8 +67,8 @@
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "balanced";
-            tapping-term-ms = <300>;
-            require-prior-idle-ms = <150>;
+            tapping-term-ms = <250>;
+            require-prior-idle-ms = <50>;
             quick-tap-ms = <150>;
             bindings = <&mo>, <&kp>;
             hold-trigger-key-positions = <15 16 27 28 29>;  // PgUp, Home, PgDn, End, PrtScn
